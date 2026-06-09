@@ -1,40 +1,35 @@
 <script lang='ts'>
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
-	let {data } = $props();
+	// let {data } = $props();
+    // let data = {
+    //     angles: [0, Math.PI / 2., Math.PI, 3. * Math.PI / 2.],
+    //     tensile_stiffness: [10, 20, 17.5, 15]
+    // };
 
-    const width = 928;
-    const height = width;
-    const margin = 10;
-    const innerRadius = width / 5;
-    const outerRadius = width / 2 - margin;
+    // const x = data.angles;
+    // const tensile_stiffness: number[] = data.tensile_stiffness;
+    // const xy: [number, number][] = x.map((angle: number, idx: number) => [angle, tensile_stiffness[idx]] );
 
-    const x = data.angles;
-    const tensile_stiffness: number[] = data.tensile_stiffness;
-    const xy = x.map((angle: number, idx: number) => [angle, tensile_stiffness[idx]] );
-    const min: number = d3.min(tensile_stiffness) as number;
-    const max: number = d3.max(tensile_stiffness) as number;
+    // const width = 928;
+    // const height = width;
+    // const margin = 10;
+    // const innerRadius = width / 5;
+    // const outerRadius = width / 2 - margin;
+    // const min: number = d3.min(tensile_stiffness) as number;
+    // const max: number = d3.max(tensile_stiffness) as number;
 
-    const y = d3.scaleRadial()
-        .domain([min, max])
-        .range([innerRadius, outerRadius]);
+    // const y = d3.scaleRadial()
+    //     .domain([min, max])
+    //     .range([innerRadius, outerRadius]);
 
-    const line = d3.lineRadial()
-        .curve(d3.curveLinearClosed)
-        .angle(d => d[0])
-        .radius(d => d[1]);
+    // const line = d3.lineRadial()
+    //     .curve(d3.curveLinearClosed)
+    //     (xy);
 
     // const area = d3.areaRadial()
     //     .curve(d3.curveLinearClosed)
     //     .angle(d => x(d.date));
-
-    const svg = d3.create("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [-width / 2, -height / 2, width, height])
-        .attr("style", "width: 100%; height: auto; font: 10px sans-serif;")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round");
 
     // svg.append("path")
     //     .attr("fill", "lightsteelblue")
@@ -106,34 +101,43 @@
     //         .text((x, i) => `${x.toFixed(0)}${i ? "" : "°F"}`)
     //         .clone(true)
     //         .attr("y", d => y(d)));
-
+    const spiral: [number, number][] = Array.from({ length: 76 }, (_, i) => [
+        (Math.PI / 3) * i, // angle (in radians)
+        2 * i // radius
+    ])
+    const line = d3.lineRadial()(spiral);
 	
-	let el;
+	// let el: HTMLDivElement;
+    // const textFn: d3.ValueFn<HTMLDivElement, unknown, string> = (d) => d as string;
 
-	onMount(() => {
-		d3.select(el)
-			.selectAll("div")
-			.data(data.angles)
-			.enter()
-			.append("div")
-			.style("width", function(d) {
-				return d + "px";
-			})
-			.text(function(d) {
-				return d;
-			});
-	});
+	// onMount(() => {
+	// 	d3.select(el)
+	// 		.selectAll("div")
+	// 		.data(data.angles)
+	// 		.enter()
+	// 		.append("div")
+	// 		.style("width", function(d) {
+	// 			return d + "px";
+	// 		})
+	// 		.text(textFn);
+	// });
 </script>
 
-<style>
-	.chart :global(div) {
-		font: 10px sans-serif;
-		background-color: steelblue;
-		text-align: right;
-		padding: 3px;
-		margin: 1px;
-		color: white;
-	}
-</style>
-
-<div bind:this={el} class="chart"></div>
+<div id="chart">
+    <svg
+        width={300}
+        height={300}
+        style="width: 100%; height: auto; font: 10px sans-serif;"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    > 
+        <path
+            class="area-path area-path-2"
+            d={line}
+            fill="none"
+            stroke="steelblue"
+            stroke-width="2"
+            transform="translate(150,150)"
+        />
+    </svg>
+</div>
